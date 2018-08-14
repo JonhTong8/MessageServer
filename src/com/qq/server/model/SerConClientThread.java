@@ -56,6 +56,10 @@ public class SerConClientThread extends Thread{
 					SerConClientThread sc = ManageClientThread.getClientThread(ms.getGetter());
 					ObjectOutputStream oos = new ObjectOutputStream(sc.s.getOutputStream());
 					oos.writeObject(ms);
+					
+					if(oos != null) {
+						oos.close();
+					}
 				}else if (ms.getMesType().equals(MessageType.message_get_onLineFriend)) {
 					//把服务器上的好友返还给客户端
 					String res = ManageClientThread.getAllOnlineUserId();
@@ -65,18 +69,35 @@ public class SerConClientThread extends Thread{
 					m.setGetter(ms.getSender());
 					ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());
 					oos.writeObject(m);
+					
+					if(oos != null) {
+						oos.close();
+					}
 				}else if(ms.getMesType().equals(MessageType.message_logout)) {
 					//stop the process
 					ManageClientThread.removeClientThread(ms.getSender());
 					break;
+				}else if (ms.getMesType().equals(MessageType.message_image)) {
+					//get the image and sent to the getter
+					SerConClientThread sc = ManageClientThread.getClientThread(ms.getGetter());
+					ObjectOutputStream oos = new ObjectOutputStream(sc.s.getOutputStream());
+					oos.writeObject(ms);
+					
+					
+					
 				}
 				
+				if (ois != null) {
+					ois.close();
+				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			}finally {
+				
 			}
 			
 		}
