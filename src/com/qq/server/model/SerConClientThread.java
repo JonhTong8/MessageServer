@@ -45,7 +45,7 @@ public class SerConClientThread extends Thread{
 	public void run() {
 		while (true) {
 			//这里的线程可以接受客户端的信息
-			
+			ObjectOutputStream oos = null;
 			try {
 				ObjectInputStream ois = new ObjectInputStream(s.getInputStream());
 				Message ms = (Message) ois.readObject();
@@ -55,12 +55,10 @@ public class SerConClientThread extends Thread{
 				//取得接收人的通讯线程
 				if(ms.getMesType().equals(MessageType.message_comm_mes)) {
 					SerConClientThread sc = ManageClientThread.getClientThread(ms.getGetter());
-					ObjectOutputStream oos = new ObjectOutputStream(sc.s.getOutputStream());
+					oos = new ObjectOutputStream(sc.s.getOutputStream());
 					oos.writeObject(ms);
 					
-					if(oos != null) {
-						oos.close();
-					}
+					
 				}else if (ms.getMesType().equals(MessageType.message_get_onLineFriend)) {
 					//把服务器上的好友返还给客户端
 					String res = ManageClientThread.getAllOnlineUserId();
@@ -68,12 +66,10 @@ public class SerConClientThread extends Thread{
 					m.setMesType(MessageType.message_ret_onLineFriend);
 					m.setCon(res);
 					m.setGetter(ms.getSender());
-					ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());
+					oos = new ObjectOutputStream(s.getOutputStream());
 					oos.writeObject(m);
 					
-					if(oos != null) {
-						oos.close();
-					}
+					
 				}else if(ms.getMesType().equals(MessageType.message_logout)) {
 					//stop the process
 					ManageClientThread.removeClientThread(ms.getSender());
@@ -81,7 +77,7 @@ public class SerConClientThread extends Thread{
 				}else if (ms.getMesType().equals(MessageType.message_image)) {
 					//get the image and sent to the getter
 					SerConClientThread sc = ManageClientThread.getClientThread(ms.getGetter());
-					ObjectOutputStream oos = new ObjectOutputStream(sc.s.getOutputStream());
+					oos = new ObjectOutputStream(sc.s.getOutputStream());
 					oos.writeObject(ms);
 					
 					String filename = new Random().getRandom(8);
@@ -104,9 +100,7 @@ public class SerConClientThread extends Thread{
 					}
 				}
 				
-				if (ois != null) {
-					ois.close();
-				}
+				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -114,7 +108,9 @@ public class SerConClientThread extends Thread{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}finally {
-				
+				if (ois != null) {
+					ois.close();
+				}
 			}
 			
 		}
