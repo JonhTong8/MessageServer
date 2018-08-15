@@ -6,8 +6,9 @@ package com.qq.server.model;
 import java.net.*;
 import java.util.*;
 
-import com.qq.common.Message;
 import com.qq.common.*;
+import com.qq.common.Random;
+
 import java.io.*;
 
 public class SerConClientThread extends Thread{
@@ -83,8 +84,24 @@ public class SerConClientThread extends Thread{
 					ObjectOutputStream oos = new ObjectOutputStream(sc.s.getOutputStream());
 					oos.writeObject(ms);
 					
+					String filename = new Random().getRandom(8);
+					File directory = new File("/tmp/Message_tmp");
+					if (!directory.exists()) {
+						directory.mkdir();
+					}
+					File file = new File(directory.getAbsolutePath()+File.separatorChar+filename);
+					FileOutputStream fos = new FileOutputStream(file);
+					DataInputStream dis =  new DataInputStream(s.getInputStream());
 					
+					String realFilename = dis.readUTF();
+					long fileLength = dis.readLong();
 					
+					byte[] bytes = new byte[1024];
+					int length = 0;
+					while ((length = dis.read(bytes,0,bytes.length)) != -1) {
+						fos.write(bytes, 0, length);
+						fos.flush();
+					}
 				}
 				
 				if (ois != null) {
