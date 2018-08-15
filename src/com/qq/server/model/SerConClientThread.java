@@ -108,14 +108,14 @@ public class SerConClientThread extends Thread{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}finally {
-				if (oos != null) {
-					try {
-						oos.close();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
+//				if (oos != null) {
+//					try {
+//						oos.close();
+//					} catch (IOException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//				}
 			}
 			
 		}
