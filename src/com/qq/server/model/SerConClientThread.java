@@ -44,6 +44,8 @@ public class SerConClientThread extends Thread{
 		}
 	}
 	public void run() {
+		FileOutputStream fos = null;
+		FileInputStream fis = null;
 		while (true) {
 			//这里的线程可以接受客户端的信息
 			ObjectOutputStream oos = null;
@@ -82,8 +84,9 @@ public class SerConClientThread extends Thread{
 					if (!directory.exists()) {
 						directory.mkdir();
 					}
+					
 					File file = new File(directory.getAbsolutePath()+File.separatorChar+filename);
-					FileOutputStream fos = new FileOutputStream(file);
+					fos = new FileOutputStream(file);
 					DataInputStream dis =  new DataInputStream(s.getInputStream());
 					
 					String realFilename = dis.readUTF();
@@ -94,9 +97,10 @@ public class SerConClientThread extends Thread{
 					while ((length = dis.read(bytes,0,bytes.length)) != -1) {
 						fos.write(bytes, 0, length);
 						fos.flush();
+						if (length < 1024)
+							break;
 					}
 					fos.close();
-					System.out.println("准备发送图片了");
 					
 					
 					//send the image 
@@ -104,8 +108,7 @@ public class SerConClientThread extends Thread{
 					SerConClientThread sc = ManageClientThread.getClientThread(ms.getGetter());
 					oos = new ObjectOutputStream(sc.s.getOutputStream());
 					oos.writeObject(ms);
-					
-					FileInputStream fis = new FileInputStream(file);
+					fis = new FileInputStream(file);
 					DataOutputStream dos = new DataOutputStream(sc.s.getOutputStream());
 					//发送文件名和长度
 					dos.writeUTF(realFilename);
@@ -117,7 +120,10 @@ public class SerConClientThread extends Thread{
 					while ((length = fis.read(bytes,0,bytes.length)) != -1) {
 						dos.write(bytes,0,length);
 						dos.flush();
+						if (length < 1024)
+							break;
 					}
+					fis.close();
 					
 				}
 				
@@ -129,14 +135,22 @@ public class SerConClientThread extends Thread{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}finally {
-//				if (oos != null) {
-//					try {
-//						oos.close();
-//					} catch (IOException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//				}
+				if (fos != null) {
+					try {
+						fos.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				if (fis != null) {
+					try {
+						fis.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 			}
 			
 		}
