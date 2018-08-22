@@ -6,6 +6,7 @@ package com.qq.server.model;
 import java.net.*;
 import java.util.*;
 
+
 import com.qq.common.*;
 import com.qq.common.Random;
 
@@ -75,7 +76,7 @@ public class SerConClientThread extends Thread{
 					ManageClientThread.removeClientThread(ms.getSender());
 					break;
 				}else if (ms.getMesType().equals(MessageType.message_image)) {
-					//get the image and sent to the getter
+					//get the image 
 					SerConClientThread sc = ManageClientThread.getClientThread(ms.getGetter());
 					oos = new ObjectOutputStream(sc.s.getOutputStream());
 					oos.writeObject(ms);
@@ -98,6 +99,24 @@ public class SerConClientThread extends Thread{
 						fos.write(bytes, 0, length);
 						fos.flush();
 					}
+					
+					//send the image 
+					//发送图片
+					FileInputStream fis = new FileInputStream(file);
+					DataOutputStream dos = new DataOutputStream(sc.s.getOutputStream());
+					//发送文件名和长度
+					dos.writeUTF(file.getName());
+					dos.flush();
+					dos.writeLong(file.length());
+					dos.flush();
+					//发送图片
+					bytes = new byte[1024];
+					length = 0;
+					while ((length = fis.read(bytes,0,bytes.length)) != -1) {
+						dos.write(bytes,0,length);
+						dos.flush();
+					}
+					
 				}
 				
 				
