@@ -77,7 +77,7 @@ public class SerConClientThread extends Thread{
 					break;
 				}else if (ms.getMesType().equals(MessageType.message_image)) {
 					//get the image 
-					SerConClientThread sc = ManageClientThread.getClientThread(ms.getGetter());
+					
 					
 					
 					String filename = new Random().getRandom(8);
@@ -100,6 +100,7 @@ public class SerConClientThread extends Thread{
 					}
 					//send the image 
 					//发送图片
+					SerConClientThread sc = ManageClientThread.getClientThread(ms.getGetter());
 					oos = new ObjectOutputStream(sc.s.getOutputStream());
 					oos.writeObject(ms);
 					
