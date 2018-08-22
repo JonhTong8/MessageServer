@@ -77,9 +77,6 @@ public class SerConClientThread extends Thread{
 					break;
 				}else if (ms.getMesType().equals(MessageType.message_image)) {
 					//get the image 
-					
-					
-					
 					String filename = new Random().getRandom(8);
 					File directory = new File("/tmp/Message_tmp");
 					if (!directory.exists()) {
@@ -98,6 +95,10 @@ public class SerConClientThread extends Thread{
 						fos.write(bytes, 0, length);
 						fos.flush();
 					}
+					fos.close();
+					System.out.println("准备发送图片了");
+					
+					
 					//send the image 
 					//发送图片
 					SerConClientThread sc = ManageClientThread.getClientThread(ms.getGetter());
@@ -107,11 +108,10 @@ public class SerConClientThread extends Thread{
 					FileInputStream fis = new FileInputStream(file);
 					DataOutputStream dos = new DataOutputStream(sc.s.getOutputStream());
 					//发送文件名和长度
-					dos.writeUTF(file.getName());
+					dos.writeUTF(realFilename);
 					dos.flush();
-					dos.writeLong(file.length());
+					dos.writeLong(fileLength);
 					dos.flush();
-					//发送图片
 					bytes = new byte[1024];
 					length = 0;
 					while ((length = fis.read(bytes,0,bytes.length)) != -1) {
